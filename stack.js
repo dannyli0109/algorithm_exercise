@@ -33,54 +33,164 @@ myStack.until(7)
 What's the time complexity?
  */
 
-function Node(value) {
+function Node (value) {
     this.value = value
     this.next = null
 }
 
-
-function Stack(capacity) {
+function Stack (capacity) {
   // implement me...
   this.capacity = capacity
   this.nodes = {
-      bottom: null
+      bottom: null,
+      top: null
   }
+  this.size = 0,
+  this.minimum = null
 }
 
-Stack.prototype.push = function(value) {
+Stack.prototype.push = function (value) {
   // implement me...
-  var currentNode = this.nodes.bottom
-  if (!currentNode) {
-    currentNode = new Node(value)
-    this.nodes.bottom = currentNode
-  } else {
-    while (currentNode.next) {
-        currentNode = currentNode.next
-    }
-    currentNode.next = new Node(value)     
+  // check if the max capacity is reached
+  if (this.capacity <= this.size) {
+    return "Max capacity already reached. Remove element before adding a new one."
   }
-};
-// Time complexity:
-
-Stack.prototype.pop = function() {
-    var currentNode = this.nodes.bottom
-    while (currentNode.next) {
-        currentNode = currentNode.next
+  let currentNode = this.nodes.bottom
+  let newNode = new Node(value) 
+  if (!currentNode) {
+    this.nodes.bottom = newNode
+    this.minimum = newNode.value
+  } else {
+    while (currentNode.next !== null) {
+      currentNode = currentNode.next
     }
-    
-  // implement me...
+    currentNode.next = newNode
+    if (this.minimum > newNode.value) {
+      this.minimum = newNode.value
+    }
+  }
+  this.nodes.top = newNode
+  this.size++   
+  return this.size
 };
-// Time complexity:
+// Time complexity: O(N)
 
-Stack.prototype.peek = function() {
-  // implement me...
-};
-// Time complexity:
+Stack.prototype.pop = function () {
+    let currentNode = this.nodes.bottom
+    let topNode = this.nodes.top
+    let output = undefined
 
-Stack.prototype.count = function() {
+    // prompt error if trying to remove element from empty stack
+    if (this.size === 0) {
+      return "There are no elements in the stack, use push(value) to add something to the stack"
+    }
+
+    if (this.minimum === this.nodes.top.value) {
+      this.minimum = this.nodes.bottom.value
+    }
+
+    // if there's only one element in the stack, set bottom and top to null
+    if (currentNode === topNode) {
+      output = currentNode.value
+      this.nodes.bottom = null
+      this.nodes.top = null
+      this.minimum = null
+    }
+
+    // traverse to the second last node and delete the next node
+    while (currentNode.next) {
+      if (this.minimum > currentNode.value) {
+        this.minimum = currentNode.value
+      }
+      if (currentNode.next === topNode) {
+        output = this.nodes.top.value
+        currentNode.next = null
+        this.nodes.top = currentNode
+        break
+      }
+      currentNode = currentNode.next
+    }
+    this.size--
+    return output
+
   // implement me...
 };
-// Time complexity:
+// Time complexity: O(N)
+
+Stack.prototype.peek = function () {
+  // implement me...
+  return this.nodes.top.value  
+};
+// Time complexity: O(1)
+
+Stack.prototype.count = function () {
+  // implement me...
+  return this.size
+};
+// Time complexity: O(1)
+
+Stack.prototype.contains = function (value) {
+  let currentNode = this.nodes.bottom
+  // traverse the stack to check the nodes
+
+  // check end node
+  if (currentNode.value === value) {
+    return true
+  }
+  
+  while (currentNode.next) {
+    currentNode = currentNode.next
+    if (currentNode.value === value) {
+      return true
+    }
+  }
+  return false
+}
+// Time complexity: O(N)
+
+Stack.prototype.until = function (value) {
+  let count = this.size
+  let currentNode = this.nodes.bottom
+
+  while(currentNode.next) {
+    if (currentNode.value === value) {
+      break
+    }
+    currentNode = currentNode.next    
+    count--
+  }
+  return count > 0 ? count : "not found"
+}
+// Time complexity: O(N)
+
+// 1. Implement a stack with a minimum method which returns the minimum element currently in the stack. This method should have O(1) time complexity. Make sure your implementation 
+
+Stack.prototype.min = function () {
+  return this.minimum
+}
+// Time complexity: O(1)
+
+// 2. Sort a stack so that its elements are in ascending order.
+// Stack.prototype.sort = function () {
+//   let newStack = new Stack(this.capacity)
+//   let currentNode = this.nodes.bottom
+//   let innerNode = this.nodes.bottom
+
+//   while(currentNode.next) {
+
+//   }
+// }
+
+let a = new Stack(10)
+a.push(5)
+a.push(2)
+a.push(10)
+a.push(11)
+a.push(1)
+a.pop()
+// console.log(a)
+// console.log(a.until(11))
+a.min()
 
 
 /*
@@ -97,3 +207,4 @@ You are given three towers (stacks) and N disks, each of different size. You can
    3. no disk can be placed on top of a disk that is smaller than it
 The disks begin on tower#1. Write a function that will move the disks from tower#1 to tower#3 in such a way that none of the constraints are violated.
  */
+
