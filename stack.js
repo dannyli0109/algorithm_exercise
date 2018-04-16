@@ -33,20 +33,20 @@ myStack.until(7)
 What's the time complexity?
  */
 
-function Node (value) {
-    this.value = value
-    this.next = null
-}
 
 function Stack (capacity) {
   // implement me...
   this.capacity = capacity
   this.nodes = {
-      bottom: null,
       top: null
   }
   this.size = 0,
   this.minimum = null
+
+  this.Node = function(value) {
+    this.value = value
+    this.next = null
+  }
 }
 
 Stack.prototype.push = function (value) {
@@ -55,72 +55,53 @@ Stack.prototype.push = function (value) {
   if (this.capacity <= this.size) {
     return "Max capacity already reached. Remove element before adding a new one."
   }
-  let currentNode = this.nodes.bottom
-  let newNode = new Node(value) 
-  if (!currentNode) {
-    this.nodes.bottom = newNode
-    this.minimum = newNode.value
+
+  let newNode = new this.Node(value) 
+  newNode.pervious = this.nodes.top
+
+  if (this.nodes.top === null) {
+    this.minimum = value 
   } else {
-    while (currentNode.next !== null) {
-      currentNode = currentNode.next
-    }
-    currentNode.next = newNode
-    if (this.minimum > newNode.value) {
-      this.minimum = newNode.value
+    if (value < this.minimum) {
+      newNode = new this.Node(2 * value - this.minimum)
+      newNode.pervious = this.nodes.top
+      this.minimum = value             
     }
   }
   this.nodes.top = newNode
-  this.size++   
+  this.size++
   return this.size
 };
-// Time complexity: O(N)
+// Time complexity: O(1)
 
 Stack.prototype.pop = function () {
-    let currentNode = this.nodes.bottom
-    let topNode = this.nodes.top
-    let output = undefined
-
+    let output
     // prompt error if trying to remove element from empty stack
     if (this.size === 0) {
       return false
     }
 
-    if (this.minimum === this.nodes.top.value) {
-      this.minimum = this.nodes.bottom.value
+    if (this.minimum > this.nodes.top.value) {
+      this.output = this.minimum
+      this.minimum = 2 * this.minimum - this.nodes.top.value
+    } else {
+      output = this.nodes.top.value
     }
-
-    // if there's only one element in the stack, set bottom and top to null
-    if (currentNode === topNode) {
-      output = currentNode.value
-      this.nodes.bottom = null
-      this.nodes.top = null
-      this.minimum = null
-    }
-
-    // traverse to the second last node and delete the next node
-    while (currentNode.next) {
-      if (this.minimum > currentNode.value) {
-        this.minimum = currentNode.value
-      }
-      if (currentNode.next === topNode) {
-        output = this.nodes.top.value
-        currentNode.next = null
-        this.nodes.top = currentNode
-        break
-      }
-      currentNode = currentNode.next
-    }
+    this.nodes.top = this.nodes.top.pervious
     this.size--
     return output
-
   // implement me...
 };
-// Time complexity: O(N)
+// Time complexity: O(1)
 
 Stack.prototype.peek = function () {
   // implement me...
   if (this.size <= 0) {
     return false
+  }
+
+  if (this.minimum > this.nodes.top.value) {
+    return this.minimum
   }
   return this.nodes.top.value  
 };
@@ -133,19 +114,24 @@ Stack.prototype.count = function () {
 // Time complexity: O(1)
 
 Stack.prototype.contains = function (value) {
-  let currentNode = this.nodes.bottom
+  let currentNode = this.nodes.top
+  let currentMin = this.minimum
   // traverse the stack to check the nodes
 
   // check end node
-  if (currentNode.value === value) {
-    return true
-  }
-  
-  while (currentNode.next) {
-    currentNode = currentNode.next
-    if (currentNode.value === value) {
+  if (this.minimum > currentNode.value) {
+    if (this.minimum === value) {
       return true
     }
+  }
+  
+  while (currentNode.pervious) {
+    if (currentMin > currentNode.value) {
+      if (currentMin === value) {
+        return true
+      }
+    }
+    currentNode = currentNode.pervious
   }
   return false
 }
@@ -195,6 +181,14 @@ Stack.prototype.sort = function () {
     iterations++
   }
 }
+
+let a = new Stack(10)
+a.push(5)
+a.push(2)
+a.push(1)
+a.push(9)
+a.pop()
+a.pop()
 // Time complexity: O(N^2)
 
 // 3. Given a string, determine if the parenthesis in the string are balanced.
@@ -258,21 +252,6 @@ function towerOfHanoi(size) {
     }
   }
 }
-
-let a = new Stack(10)
-a.push(9)
-a.push(5)
-a.push(2)
-a.push(10)
-a.push(7)
-a.push(11)
-a.push(1)
-a.pop()
-// console.log(a)
-// console.log(a.until(11))
-a.min()
-a.sort()
-
 
 /*
 *** Exercises:
