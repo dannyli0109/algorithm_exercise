@@ -82,7 +82,7 @@ Stack.prototype.pop = function () {
 
     // prompt error if trying to remove element from empty stack
     if (this.size === 0) {
-      return "There are no elements in the stack, use push(value) to add something to the stack"
+      return false
     }
 
     if (this.minimum === this.nodes.top.value) {
@@ -119,6 +119,9 @@ Stack.prototype.pop = function () {
 
 Stack.prototype.peek = function () {
   // implement me...
+  if (this.size <= 0) {
+    return false
+  }
   return this.nodes.top.value  
 };
 // Time complexity: O(1)
@@ -171,26 +174,104 @@ Stack.prototype.min = function () {
 // Time complexity: O(1)
 
 // 2. Sort a stack so that its elements are in ascending order.
-// Stack.prototype.sort = function () {
-//   let newStack = new Stack(this.capacity)
-//   let currentNode = this.nodes.bottom
-//   let innerNode = this.nodes.bottom
+Stack.prototype.sort = function () {
+  let newStack = new Stack(this.capacity)
+  // let currentNode = this.nodes.bottom
+  let innerNode = this.nodes.bottom
+  let iterations = 0
 
-//   while(currentNode.next) {
+  while(iterations < this.size) {
+    innerNode = this.nodes.bottom
+    while(innerNode.next) {
+      // bubble sort
+      if (innerNode.value > innerNode.next.value) {
+        // simple swap without adding variables 
+        innerNode.next.value = innerNode.value + innerNode.next.value
+        innerNode.value = innerNode.next.value - innerNode.value
+        innerNode.next.value = innerNode.next.value - innerNode.value
+      }
+      innerNode = innerNode.next
+    }
+    iterations++
+  }
+}
+// Time complexity: O(N^2)
 
-//   }
-// }
+// 3. Given a string, determine if the parenthesis in the string are balanced.
+function balancedParens(str) {
+  let stack = new Stack(str.length)
+  str.split('').forEach(s => {
+    if (s === '(') {
+      stack.push(s)
+    }
+
+    if (s === ')') {
+      if (!stack.pop()) return false
+    }
+  })
+  if (stack.size > 0) {
+    return  false
+  }
+  return true
+}
+
+// 4. Tower of Hanoi
+function towerOfHanoi(size) {
+  let s1 = new Stack(size)
+  let s2 = new Stack(size)
+  let s3 = new Stack(size)
+  // let currentPiece = null
+
+  for (var i = 0; i < size; i ++) {
+    s1.push(size - i)
+  }
+  console.log(s1, s2, s3)
+  if (size % 2 === 0) {
+    while (s1.size > 0 || s2.size > 0) {
+      // a -> b
+      move(s1, s2)
+      // a -> c
+      move(s1, s3)
+      // b -> c
+      move(s2, s3)
+      // console.log(s1, s2, s3) 
+    }
+  } else {
+    // if the size of the tower is even
+    while (s1.size > 0 || s2.size > 0) {
+      // a -> c
+      move(s1, s3)
+      // a -> b
+      move(s1, s2)
+      // b -> c
+      move(s2, s3)
+      // console.log(s1, s2, s3)
+    }
+  }
+  console.log(s1, s2, s3)
+
+  function move(_s1, _s2) {
+    if ((_s1.peek() < _s2.peek() && _s1.size > 0) || _s2.peek() === false) {
+      _s2.push(_s1.pop())
+    } else {
+      _s1.push(_s2.pop())
+    }
+  }
+}
 
 let a = new Stack(10)
+a.push(9)
 a.push(5)
 a.push(2)
 a.push(10)
+a.push(7)
 a.push(11)
 a.push(1)
 a.pop()
 // console.log(a)
 // console.log(a.until(11))
 a.min()
+a.sort()
 
 
 /*
